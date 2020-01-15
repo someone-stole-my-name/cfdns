@@ -2,7 +2,6 @@
 cfdns is a small tool used to update dynamic DNS entries on Cloudflare.
 
 ![Build](https://github.com/someone-stole-my-name/cfdns/workflows/Build/badge.svg)
-![Dependencies](https://img.shields.io/librariesio/github/someone-stole-my-name/cfdns)
 ![License](https://img.shields.io/github/license/someone-stole-my-name/cfdns?color=green)
 
 ## Instructions
