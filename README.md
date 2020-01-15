@@ -38,4 +38,4 @@ cfdns is a small tool used to update dynamic DNS entries on Cloudflare.
 ### Container
 
  1. Create a json config file (see example above).
- 2. Run the program `docker run -it --rm -v /my/path/to/config.json:/go/src/app/config.json chn2guevara/cfdns:latest --config /go/src/app/config.json`
+ 2. Run the program `docker run -it --rm -v /my/path/to/config.json:/go/src/app/config.json chn2guevara/cfdns:1.0 --config /go/src/app/config.json`
