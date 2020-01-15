@@ -34,6 +34,16 @@ cfdns is a small tool used to update dynamic DNS entries on Cloudflare.
 
  3. Run the program `cfdns --config config.json`
 
+ #### Systemd autostart (Linux)
+
+ 4. Edit the `cfdns.service` file and move it to `/etc/systemd/system/`, then  run:
+
+ ```
+ sudo systemctl daemon-reload
+ sudo systemctl enable cfdns
+ sudo systemctl start cfdns
+ ```
+
 ### Container
 
  1. Create a json config file (see example above).
