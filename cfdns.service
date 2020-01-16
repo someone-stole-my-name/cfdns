@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/bin/sh -c '/opt/cfdns/cfdns -config /opt/cfdns/config.json &>> /var/log/cfdns.log'
+ExecStart=/bin/sh -c '/opt/cfdns/cfdns -config /opt/cfdns/config.json'
 Restart=always
 RestartSec=3
 
