@@ -10,17 +10,14 @@ node('docker && sonar') {
   }
 
   stage('Sonarqube') {
-    environment {
-      scannerHome = tool 'SonarQubeScanner'
+    scannerHome = tool 'SonarQubeScanner'
+    withSonarQubeEnv('sonar') {
+      sh "${scannerHome}/bin/sonar-scanner"
     }
-    steps {
-      withSonarQubeEnv('sonar') {
-          sh "${scannerHome}/bin/sonar-scanner"
-      }
-      timeout(time: 10, unit: 'MINUTES') {
-        waitForQualityGate abortPipeline: true
-      }
+    timeout(time: 10, unit: 'MINUTES') {
+      waitForQualityGate abortPipeline: true
     }
+  }
 }
 
   stage("Create binaries") {
