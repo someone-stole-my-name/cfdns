@@ -19,7 +19,6 @@ node('docker && sonar') {
     }
 }
 
-
   stage("Create binaries") {
     docker.image("golang:1.13.6-alpine3.11").inside("-u root -v ${pwd()}:${goPath}") {
         sh "apk add dep git && cd ${goPath} && dep ensure"
