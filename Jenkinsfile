@@ -10,13 +10,13 @@ node('docker && sonar') {
   }
 
   stage('Sonarqube') {
-  scannerHome = tool 'SonarQubeScanner'
-  withSonarQubeEnv('sonar') {
-    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=cfdns"
-  }
-  timeout(time: 10, unit: 'MINUTES') {
-    waitForQualityGate abortPipeline: true
-  }
+    scannerHome = tool 'SonarQubeScanner'
+    withSonarQubeEnv('sonar') {
+      sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=cfdns"
+    }
+    timeout(time: 10, unit: 'MINUTES') {
+      waitForQualityGate abortPipeline: true
+    }
 }
 
 
