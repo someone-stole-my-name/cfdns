@@ -65,6 +65,11 @@ func main() {
 				continue
 			}
 
+			if len(zones) == 0 {
+				log.Println("Warning: No matching record!")
+				continue
+			}
+
 			for _, zone := range zones {
 				if zone.Name == record.Zone {
 					zoneID = zone.ID
