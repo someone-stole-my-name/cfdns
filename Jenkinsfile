@@ -9,6 +9,20 @@ node(label 'docker && sonar') {
     checkout scm
   }
 
+  stage('Sonarqube') {
+    environment {
+      scannerHome = tool 'SonarQubeScanner'
+    }
+    steps {
+      withSonarQubeEnv('sonar') {
+          sh "${scannerHome}/bin/sonar-scanner"
+      }
+      timeout(time: 10, unit: 'MINUTES') {
+        waitForQualityGate abortPipeline: true
+      }
+    }
+}
+
   stage("Create binaries") {
     docker.image("golang:1.13.6-alpine3.11").inside("-u root -v ${pwd()}:${goPath}") {
         sh "apk add dep git && cd ${goPath} && dep ensure"
