@@ -10,15 +10,15 @@ node('docker && sonar') {
   }
 
   stage('Sonarqube') {
-    scannerHome = tool 'SonarQubeScanner'
-    withSonarQubeEnv('sonar') {
-      sh "${scannerHome}/bin/sonar-scanner"
-    }
-    timeout(time: 10, unit: 'MINUTES') {
-      waitForQualityGate abortPipeline: true
-    }
+  scannerHome = tool 'SonarQubeScanner'
+  withSonarQubeEnv('sonar') {
+    sh "${scannerHome}/bin/sonar-scanner"
+  }
+  timeout(time: 10, unit: 'MINUTES') {
+    waitForQualityGate abortPipeline: true
   }
 }
+
 
   stage("Create binaries") {
     docker.image("golang:1.13.6-alpine3.11").inside("-u root -v ${pwd()}:${goPath}") {
