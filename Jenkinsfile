@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-node(label 'docker && sonar') {
+node(label docker && sonar) {
   String applicationName = "cfdns"
   String buildNumber = "${env.GIT_BRANCH}.${env.BUILD_NUMBER}"
   String goPath = "/go/src/github.com/someone-stole-my-name/${applicationName}"
