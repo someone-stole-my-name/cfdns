@@ -45,11 +45,11 @@ func main() {
 	for {
 		for _, record := range config.Records {
 
-			var (
-				zoneID          string
-				dnsEntryID      string
-				dnsEntryContent string
-			)
+			currentIP, err := GetCurrentIP(config.IPEndpoint)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
 
 			api, err := cloudflare.New(record.APIKey, record.Username)
 			if err != nil {
@@ -59,50 +59,30 @@ func main() {
 
 			log.Printf("Updating record \"%v\" from zone \"%v\"", record.Entry, record.Zone)
 
-			zones, err := api.ListZones()
+			zoneID, err := api.ZoneIDByName(record.Zone)
 			if err != nil {
 				log.Println(err)
-				log.Println("Check your credentials")
-				continue
-			}
-
-			for _, zone := range zones {
-				if zone.Name == record.Zone {
-					zoneID = zone.ID
-				}
-			}
-
-			if zoneID == "" {
-				log.Println("Couldn't get ZoneID")
 				continue
 			}
 
 			currRecords, err := api.DNSRecords(zoneID, cloudflare.DNSRecord{Type: "A", Name: record.Entry})
 			if err != nil {
-				log.Println("Couldn't get RecordID")
+				log.Println(err)
 				continue
 			}
+
 			if len(currRecords) == 0 {
 				log.Println("Found DNS record but it is not type A")
 				continue
 			}
 
-			dnsEntryID = currRecords[0].ID
-			dnsEntryContent = currRecords[0].Content
-
-			currentIP, err := GetCurrentIP(config.IPEndpoint)
-			if err != nil {
-				log.Println(err)
-				continue
-			}
-
-			if currentIP == dnsEntryContent {
+			if currentIP == currRecords[0].Content {
 				log.Println("Current IP matches Cloudflare's record, no need to update")
 				continue
 			}
 
 			DNSRecord := cloudflare.DNSRecord{TTL: 1, Type: "A", Name: record.Entry, Content: currentIP}
-			err = api.UpdateDNSRecord(zoneID, dnsEntryID, DNSRecord)
+			err = api.UpdateDNSRecord(zoneID, currRecords[0].ID, DNSRecord)
 			if err != nil {
 				log.Println(err)
 				continue
