@@ -62,6 +62,7 @@ func main() {
 			zones, err := api.ListZones()
 			if err != nil {
 				log.Println(err)
+				log.Println("Check your credentials")
 				continue
 			}
 
