@@ -1,5 +1,5 @@
 # Cloudflare Dynamic DNS Tool
-cfdns is a small tool used to update dynamic DNS entries on Cloudflare.
+Use cfdns to create your own DDNS service with CloudFlare
 
 ![Build](https://github.com/someone-stole-my-name/cfdns/workflows/Build/badge.svg)
 ![License](https://img.shields.io/github/license/someone-stole-my-name/cfdns?color=green)
