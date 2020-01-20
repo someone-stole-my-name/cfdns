@@ -65,26 +65,27 @@ func main() {
 				continue
 			}
 
-			if len(zones) == 0 {
-				log.Println("Warning: No matching record!")
-				continue
-			}
-
 			for _, zone := range zones {
 				if zone.Name == record.Zone {
 					zoneID = zone.ID
 				}
 			}
+
 			if zoneID == "" {
 				log.Println("Couldn't get ZoneID")
 				continue
 			}
 
 			currRecords, err := api.DNSRecords(zoneID, cloudflare.DNSRecord{Type: "A", Name: record.Entry})
-			if err != nil || currRecords[0].ID == "" {
+			if err != nil {
 				log.Println("Couldn't get RecordID")
 				continue
 			}
+			if len(currRecords) == 0 {
+				log.Println("Found DNS record but it is not type A")
+				continue
+			}
+
 			dnsEntryID = currRecords[0].ID
 			dnsEntryContent = currRecords[0].Content
 
