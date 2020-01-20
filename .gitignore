@@ -2,3 +2,5 @@ vendor
 *.exe
 *_linx64
 .idea
+config.json
+cfdns
