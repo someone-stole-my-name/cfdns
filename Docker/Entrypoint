@@ -1,0 +1,13 @@
+#!/bin/bash
+
+CONFIG=$( jq -n \
+                  --arg ipendpoint  "$IP_Endpoint" \
+                  --arg sleep  "$SLEEP" \
+                  --arg username  "$USERNAME" \
+                  --arg apikey "$APIKEY" \
+                  --arg zone "$ZONE" \
+                  --arg entry "$ENTRY" \
+'{ IPEndpoint: $ipendpoint, Sleep: ($sleep|tonumber), Records: [{ Username: $username, "API-Key": $apikey, Zone: $zone, Entry: $entry }] }' )
+
+echo $CONFIG > config.json
+./cfdns_linux_amd64_master --config config.json
