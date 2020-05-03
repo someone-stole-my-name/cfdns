@@ -1,60 +1,37 @@
 #!/usr/bin/env groovy
 
-node('docker && sonar') {
-  String applicationName = "cfdns"
-  String buildNumber = "${env.GIT_BRANCH}.${env.BUILD_NUMBER}"
-  String goPath = "/go/src/github.com/someone-stole-my-name/${applicationName}"
+def applicationName = "cfdns"
+def binaries = [
+  [GOOS: "linux", GOARCH: "amd64", SUFFIX: ""],
+  [GOOS: "linux", GOARCH: "arm", SUFFIX: ""],
+  [GOOS: "windows", GOARCH: "amd64", SUFFIX: ".exe"]
+]
 
-  stage('Checkout from GitHub') {
+node('master') {
+  def root = tool name: 'Go 1.14.2', type: 'go'
+  stage('Checkout') {
     checkout scm
   }
 
-  stage('Sonarqube') {
-    scannerHome = tool 'SonarQubeScanner'
-    withSonarQubeEnv('sonar') {
-      sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=cfdns"
-    }
-    timeout(time: 10, unit: 'MINUTES') {
-      waitForQualityGate abortPipeline: true
-    }
-}
-
   stage("Create binaries") {
-    docker.image("golang:1.13.6-alpine3.11").inside("-u root -v ${pwd()}:${goPath}") {
-        sh "apk add dep git && cd ${goPath} && dep ensure"
-        sh "cd ${goPath} &&  GOOS=darwin GOARCH=amd64 go build -o binaries/amd64/${buildNumber}/darwin/${applicationName}-${buildNumber}.darwin.amd64"
-        sh "cd ${goPath} && GOOS=windows GOARCH=amd64 go build -o binaries/amd64/${buildNumber}/windows/${applicationName}-${buildNumber}.windows.amd64.exe"
-        sh "cd ${goPath} && GOOS=linux GOARCH=amd64 go build -o binaries/amd64/${buildNumber}/linux/${applicationName}-${buildNumber}.linux.amd64"
+    commitId = sh(returnStdout: true, script: 'git rev-parse --short HEAD | tr -d "\n\r"')
+    build = "${BRANCH_NAME}_${commitId}".replace("/", "-")
+
+    withEnv(["GOROOT=${root}", "PATH+GO=${root}/bin:${HOME}/go/bin", "GOPATH=${WORKSPACE}"]) {
+      sh 'go get -u github.com/golang/dep/cmd/dep'
+      dir("${GOPATH}/src/cfdns") {
+        sh "${GOPATH}/bin/dep ensure"
+        for (item in binaries) {
+          GOOS = item['GOOS']
+          GOARCH = item['GOARCH']
+          SUFFIX = item['SUFFIX']
+          sh "GOOS=${GOOS} GOARCH=${GOARCH} go build -o \
+            ${WORKSPACE}/artifacts/${applicationName}_${GOOS}_${GOARCH}_${build}${SUFFIX}"
+        }
+      }
     }
   }
-
-  stage("Archive artifacts") {
-    nexusArtifactUploader artifacts: [
-      [
-        artifactId: 'cfdns-windows',
-        classifier: '',
-        file: "binaries/amd64/${buildNumber}/windows/${applicationName}-${buildNumber}.windows.amd64.exe",
-        type: 'exe'
-      ],
-      [
-        artifactId: 'cfdns-linux',
-        classifier: '',
-        file: "binaries/amd64/${buildNumber}/linux/${applicationName}-${buildNumber}.linux.amd64",
-        type: ''
-      ],
-      [
-        artifactId: 'cfdns-darwin',
-        classifier: '',
-        file: "binaries/amd64/${buildNumber}/darwin/${applicationName}-${buildNumber}.darwin.amd64",
-        type: ''
-      ]
-    ], 
-    credentialsId: '1a8017ea-7bb0-47f0-aff3-8b0d81efa573',
-    groupId: '',
-    nexusUrl: "${env.nexusUrl}",
-    nexusVersion: 'nexus3',
-    protocol: 'http',
-    repository: 'cfdns',
-    version: '1.0'
+  stage("Upload Artifacts") {
+    step([$class: 'MinioUploader', sourceFile: "artifacts/*", bucketName: "artifacts"])
   }
 }

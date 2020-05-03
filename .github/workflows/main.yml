@@ -26,12 +26,12 @@ jobs:
         mkdir -p $GOBIN
         mkdir -p $GOPATH/src/github.com/$GITHUB_REPOSITORY
         mv ./* $GOPATH/src/github.com/$GITHUB_REPOSITORY
-        cd $GOPATH/src/github.com/$GITHUB_REPOSITORY
+        cd $GOPATH/src/github.com/$GITHUB_REPOSITORY/src/cfdns
         if [ -f Gopkg.toml ]; then
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
     - name: Build
       run: |
-        cd $HOME/go/src/github.com/$GITHUB_REPOSITORY
+        cd $HOME/go/src/github.com/$GITHUB_REPOSITORY/src/cfdns
         go build *.go
