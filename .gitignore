@@ -3,3 +3,4 @@ vendor
 *_linx64
 .idea
 config.json
+Dockerfile

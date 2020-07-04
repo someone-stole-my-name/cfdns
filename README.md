@@ -45,5 +45,6 @@ Use cfdns to create your own DDNS service with CloudFlare
 
 ### Container
 
- 1. Create a json config file (see example above).
- 2. Run the program `docker run -it --rm -v /my/path/to/config.json:/go/src/app/config.json chn2guevara/cfdns:1.0 --config /go/src/app/config.json`
+```
+docker run --rm -it -e "CF_USERNAME=example@gmail.com" -e "CF_APIKEY=baaa7b3332fddee9f2b9ca51c81d261e" -e "CF_ZONE=example.com" -e "CF_ENTRY=example.com" chn2guevara/cfdns
+```
