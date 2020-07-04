@@ -1,0 +1,11 @@
+image: chn2guevara/cfdns:latest
+manifests:
+  - image: chn2guevara/cfdns:amd64
+    platform:
+      architecture: amd64
+      os: linux
+  - image: chn2guevara/cfdns:arm64v8
+    platform:
+      architecture: arm64
+      os: linux
+      variant: v8

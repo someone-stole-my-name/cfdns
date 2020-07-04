@@ -1,0 +1,16 @@
+#!/bin/sh
+
+cd /go/src/app/src/cfdns
+
+echo "{
+    \"IPEndpoint\": \"https://ipinfo.io/ip\",
+    \"Sleep\": 60,
+    \"Records\": [{
+            \"Username\": \"${CF_USERNAME}\",
+            \"API-Key\": \"${CF_APIKEY}\",
+            \"Zone\": \"${CF_ZONE}\",
+            \"Entry\": \"${CF_ENTRY}\"
+    }]
+}" > /go/src/app/src/cfdns/config.json
+
+./cfdns -config config.json
